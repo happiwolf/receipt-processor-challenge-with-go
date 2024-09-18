@@ -56,13 +56,13 @@ func calculatePoints(receipt Receipt) int {
 		}
 	}
 
-	purchaseDate, _ := time.Parse("2024-09-18", receipt.PurchaseDate)
+	purchaseDate, _ := time.Parse("2006-01-02", receipt.PurchaseDate)
 	if purchaseDate.Day()%2 != 0 {
 		points += 6
 	}
 
-	purchaseTime, _ := time.Parse("09:00", receipt.PurchaseTime)
-	if purchaseTime.Hour() == 14 || (purchaseTime.Hour() == 15 && purchaseTime.Minute() == 0) {
+	purchaseTime, _ := time.Parse("15:04", receipt.PurchaseTime)
+	if purchaseTime.Hour() == 14 || purchaseTime.Hour() == 15 {
 		points += 10
 	}
 
@@ -85,8 +85,23 @@ func processReceipt(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"id": receiptID})
 }
 
+func getPoints(w http.ResponseWriter, r *http.Request) {
+	receiptID := strings.TrimPrefix(r.URL.Path, "/receipts/")
+	receiptID = strings.TrimSuffix(receiptID, "/points")
+	points, exists := receiptsStore[receiptID]
+
+	if !exists {
+		http.Error(w, "Receipt not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]int{"points": points})
+}
+
 func main() {
 	http.HandleFunc("/receipts/process", processReceipt)
+	http.HandleFunc("/receipts/", getPoints)
 	fmt.Println("Server is running on port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
