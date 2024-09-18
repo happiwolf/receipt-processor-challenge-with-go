@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+type Receipt struct {
+	Retailer string
+	Total    string
+}
 
 func main() {
-	fmt.Println("Hello, World!")
 }
