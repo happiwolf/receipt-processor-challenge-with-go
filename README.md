@@ -1,3 +1,14 @@
+# Instructions:
+
+## Using Docker:
+- Build the Docker image: `docker build -t receiptprocessor .`
+- Run the container: `docker run -p 8080:8080 receiptprocessor`
+
+## Without Docker:
+- `go mod init receiptprocessor`
+- `go get github.com/google/uuid`
+- `go run main.go`
+
 # Receipt Processor
 
 Build a webservice that fulfils the documented API. The API is described below. A formal definition is provided 
